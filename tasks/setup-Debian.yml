@@ -6,13 +6,20 @@
       - gnupg2
     state: present
 
-- name: Add Elasticsearch apt key.
+- name: Add Elasticsearch apt key (url).
   apt_key:
-    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    url: "{{ elasticsearch_apt_key_url | d(omit) }}"
     state: present
+  when: elasticsearch_apt_key_url | d('') | length > 0
+
+- name: Add Elasticsearch apt key (data).
+  apt_key:
+    data: "{{ elasticsearch_apt_key_data | d(omit) }}"
+    state: present
+  when: elasticsearch_apt_key_data | d('') | length > 0
 
 - name: Add Elasticsearch repository.
   apt_repository:
-    repo: 'deb https://artifacts.elastic.co/packages/{{ elasticsearch_version }}/apt stable main'
+    repo: "{{ elasticsearch_apt_repo_url }}"
     state: present
     update_cache: true
